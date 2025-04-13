@@ -1,0 +1,7 @@
+This is a placeholder for your profile picture file (profile-placeholder.jpg).
+
+Please replace this with an actual image file.
+
+You can:
+1. Add your own profile photo named 'profile-placeholder.jpg'
+2. Or use a different filename and update the src attribute in the img tag in index.html 

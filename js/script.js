@@ -1,0 +1,393 @@
+// Matrix Rain Animation
+class MatrixRain {
+    constructor() {
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.style.position = 'fixed';
+        this.canvas.style.top = '0';
+        this.canvas.style.left = '0';
+        this.canvas.style.zIndex = '-2';
+        this.canvas.style.opacity = '0.1';
+        document.body.appendChild(this.canvas);
+        
+        this.fontSize = 14;
+        this.columns = Math.floor(this.canvas.width / this.fontSize);
+        this.drops = [];
+        
+        this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ'.split('');
+        
+        for (let i = 0; i < this.columns; i++) {
+            this.drops[i] = Math.floor(Math.random() * -100);
+        }
+        
+        this.draw = this.draw.bind(this);
+        this.resize = this.resize.bind(this);
+        
+        window.addEventListener('resize', this.resize);
+        this.interval = setInterval(this.draw, 40);
+    }
+    
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.columns = Math.floor(this.canvas.width / this.fontSize);
+        this.drops = [];
+        for (let i = 0; i < this.columns; i++) {
+            this.drops[i] = Math.floor(Math.random() * -100);
+        }
+    }
+    
+    draw() {
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.ctx.fillStyle = '#0f0';
+        this.ctx.font = `${this.fontSize}px monospace`;
+        
+        for (let i = 0; i < this.drops.length; i++) {
+            const text = this.chars[Math.floor(Math.random() * this.chars.length)];
+            
+            this.ctx.fillText(text, i * this.fontSize, this.drops[i] * this.fontSize);
+            
+            if (this.drops[i] * this.fontSize > this.canvas.height && Math.random() > 0.98) {
+                this.drops[i] = 0;
+            }
+            
+            this.drops[i]++;
+        }
+    }
+    
+    destroy() {
+        clearInterval(this.interval);
+        window.removeEventListener('resize', this.resize);
+        this.canvas.remove();
+    }
+}
+
+// Terminal Text Animation
+class TerminalText {
+    constructor(element) {
+        this.element = element;
+        this.words = JSON.parse(this.element.getAttribute('data-words') || '["Hello, World!"]');
+        this.speed = parseInt(this.element.getAttribute('data-speed') || '100');
+        this.delay = parseInt(this.element.getAttribute('data-delay') || '1000');
+        this.loop = this.element.hasAttribute('data-loop');
+        this.cursor = this.element.hasAttribute('data-cursor');
+        
+        this.current = 0;
+        this.isDeleting = false;
+        this.text = '';
+        
+        if (this.cursor) {
+            this.element.classList.add('terminal-cursor');
+        }
+        
+        this.type();
+    }
+    
+    type() {
+        const current = this.current % this.words.length;
+        const fullText = this.words[current];
+        
+        if (this.isDeleting) {
+            this.text = fullText.substring(0, this.text.length - 1);
+        } else {
+            this.text = fullText.substring(0, this.text.length + 1);
+        }
+        
+        this.element.textContent = this.text;
+        
+        let typeSpeed = this.speed;
+        
+        if (this.isDeleting) {
+            typeSpeed /= 2;
+        }
+        
+        if (!this.isDeleting && this.text === fullText) {
+            typeSpeed = this.delay;
+            this.isDeleting = true;
+        } else if (this.isDeleting && this.text === '') {
+            this.isDeleting = false;
+            this.current++;
+            typeSpeed = 500;
+            
+            if (!this.loop && this.current >= this.words.length) {
+                return;
+            }
+        }
+        
+        setTimeout(() => this.type(), typeSpeed);
+    }
+}
+
+// Intersection Observer for Section Animations
+function createIntersectionObserver() {
+    const sections = document.querySelectorAll('.section');
+    
+    const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, options);
+    
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+}
+
+// Enhanced Smooth Scrolling for Navigation
+function setupEnhancedSmoothScrolling() {
+    // Create scroll indicator
+    const scrollIndicator = document.createElement('div');
+    scrollIndicator.className = 'scroll-indicator';
+    document.body.appendChild(scrollIndicator);
+    
+    // Update scroll indicator width
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        scrollIndicator.style.width = scrolled + '%';
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Clear any existing active classes
+            navLinks.forEach(l => l.classList.remove('active'));
+            
+            // Add active class to clicked link
+            link.classList.add('active');
+            
+            const targetId = link.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            // Remove any existing highlight classes
+            sections.forEach(section => {
+                section.classList.remove('section-highlight');
+            });
+            
+            // Smooth scroll to target
+            window.scrollTo({
+                top: targetElement.offsetTop - 80,
+                behavior: 'smooth'
+            });
+            
+            // After scrolling is complete, add highlight effect
+            setTimeout(() => {
+                targetElement.classList.add('section-highlight');
+                
+                // Remove highlight class after animation completes
+                setTimeout(() => {
+                    targetElement.classList.remove('section-highlight');
+                }, 1500);
+            }, 500); // Slight delay to ensure scroll completes
+        });
+    });
+}
+
+// Matrix Code Rain
+function createMatrixCodeRain() {
+    const canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.zIndex = '-5';
+    canvas.style.opacity = '0.1';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const ctx = canvas.getContext('2d');
+    const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    const columns = Math.floor(canvas.width / 20);
+    const drops = [];
+    
+    for (let i = 0; i < columns; i++) {
+        drops[i] = Math.floor(Math.random() * -100);
+    }
+    
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#0f0';
+        ctx.font = '15px monospace';
+        
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(text, i * 20, drops[i] * 20);
+            
+            if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            
+            drops[i]++;
+        }
+    }
+    
+    // Resize handler
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+    
+    return setInterval(draw, 50);
+}
+
+// Active Navigation Link
+function setupActiveNavigation() {
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    window.addEventListener('scroll', () => {
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            
+            if (pageYOffset >= sectionTop - 200) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+}
+
+// Initialize Terminal Commands
+function initTerminalCommands() {
+    const commandElements = document.querySelectorAll('[data-terminal-command]');
+    
+    commandElements.forEach(element => {
+        const command = element.getAttribute('data-terminal-command');
+        const output = element.getAttribute('data-terminal-output');
+        const delay = parseInt(element.getAttribute('data-terminal-delay') || '100');
+        
+        let commandText = '';
+        let currentIndex = 0;
+        
+        const typeCommand = () => {
+            if (currentIndex < command.length) {
+                commandText += command[currentIndex];
+                element.textContent = commandText;
+                currentIndex++;
+                setTimeout(typeCommand, delay);
+            } else if (output) {
+                const outputElement = document.createElement('div');
+                outputElement.classList.add('terminal-output');
+                outputElement.textContent = output;
+                element.parentNode.insertBefore(outputElement, element.nextSibling);
+            }
+        };
+        
+        typeCommand();
+    });
+}
+
+// Back to Top Button
+function setupBackToTop() {
+    const backToTopButton = document.getElementById('back-to-top');
+    
+    // Show button when user scrolls down 300px
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            backToTopButton.classList.add('visible');
+        } else {
+            backToTopButton.classList.remove('visible');
+        }
+    });
+    
+    // Scroll to top with animation when button is clicked
+    backToTopButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Add a glitch effect to the button when clicked
+        backToTopButton.style.transform = 'scale(1.1)';
+        backToTopButton.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.8)';
+        
+        setTimeout(() => {
+            backToTopButton.style.transform = '';
+            backToTopButton.style.boxShadow = '';
+        }, 300);
+        
+        // Scroll to top with smooth animation
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+        
+        // Highlight header when back to top is clicked
+        setTimeout(() => {
+            const header = document.querySelector('header');
+            header.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.5)';
+            
+            setTimeout(() => {
+                header.style.boxShadow = '';
+            }, 1000);
+        }, 500);
+    });
+}
+
+// On Page Load
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Matrix Rain
+    const matrixRain = new MatrixRain();
+    
+    // Add subtle matrix code rain in background
+    const matrixInterval = createMatrixCodeRain();
+    
+    // Initialize Section Animations
+    createIntersectionObserver();
+    
+    // Initialize Enhanced Smooth Scrolling
+    setupEnhancedSmoothScrolling();
+    
+    // Initialize Active Navigation
+    setupActiveNavigation();
+    
+    // Initialize Back to Top Button
+    setupBackToTop();
+    
+    // Terminal text animations
+    document.querySelectorAll('[data-words]').forEach(element => {
+        new TerminalText(element);
+    });
+    
+    // Initialize terminal commands
+    initTerminalCommands();
+    
+    // Set first nav link as active by default
+    document.querySelector('.nav-link').classList.add('active');
+    
+    // Add CSS class for section animations on load
+    setTimeout(() => {
+        document.querySelector('.section').classList.add('visible');
+        document.querySelector('.section').classList.add('section-highlight');
+        setTimeout(() => {
+            document.querySelector('.section').classList.remove('section-highlight');
+        }, 1500);
+    }, 500);
+}); 

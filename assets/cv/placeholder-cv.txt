@@ -1,0 +1,7 @@
+This is a placeholder for your CV file (cristian-trifan-cv.pdf).
+
+Please replace this with your actual CV or resume in PDF format.
+
+You can:
+1. Add your own CV named 'cristian-trifan-cv.pdf'
+2. Or use a different filename and update the href attribute in the download link in index.html 
