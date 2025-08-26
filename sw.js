@@ -1,10 +1,9 @@
 const CACHE_NAME = 'portfolio-v1.0';
 const urlsToCache = [
-  '/',
-  '/css/style.css',
-  '/js/script.js',
-  '/assets/images/Poza%20Profil.jpg',
-  '/assets/images/hacker.png',
+  './',
+  './css/style.css',
+  './js/script.js',
+  './assets/images/hacker.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
   'https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Source+Code+Pro:wght@300;400;500;700&display=swap'
 ];
