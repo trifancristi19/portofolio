@@ -1,4 +1,15 @@
 /* Performance Optimized CSS - Critical styles moved to inline HTML */
+/* Font display optimization for better performance */
+@font-face {
+    font-family: 'Share Tech Mono';
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Source Code Pro';
+    font-display: swap;
+}
+
 :root {
     --primary-color: #0f0;
     --primary-dark: #080;
@@ -14,11 +25,10 @@
 
 /* Performance optimizations */
 * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     will-change: auto;
-}
-
-body {
-    contain: layout style paint;
 }
 
 .section {
@@ -27,21 +37,6 @@ body {
 
 .profile-picture img {
     contain: layout style paint;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: var(--font-main);
-    background-color: var(--dark-bg);
-    color: var(--text-color);
-    line-height: 1.6;
-    overflow-x: hidden;
-    position: relative;
 }
 
 /* Skip Link for Accessibility */
