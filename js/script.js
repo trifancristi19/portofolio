@@ -138,7 +138,7 @@ class TerminalText {
     }
 }
 
-// Intersection Observer for Section Animations
+// Intersection Observer for Section Animations - Optimized to prevent forced reflow
 function createIntersectionObserver() {
     const sections = document.querySelectorAll('.section');
     
@@ -149,11 +149,14 @@ function createIntersectionObserver() {
     };
     
     const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
-            }
+        // Use requestAnimationFrame to batch DOM operations
+        requestAnimationFrame(() => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
         });
     }, options);
     
@@ -169,12 +172,20 @@ function setupEnhancedSmoothScrolling() {
     scrollIndicator.className = 'scroll-indicator';
     document.body.appendChild(scrollIndicator);
     
-    // Update scroll indicator width
+    // Update scroll indicator width - Throttled to prevent forced reflow
+    let scrollTimeout;
     window.addEventListener('scroll', () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrolled = (winScroll / height) * 100;
-        scrollIndicator.style.width = scrolled + '%';
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(() => {
+                requestAnimationFrame(() => {
+                    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                    const scrolled = (winScroll / height) * 100;
+                    scrollIndicator.style.width = scrolled + '%';
+                });
+                scrollTimeout = null;
+            }, 16); // ~60fps throttling
+        }
     });
 
     const navLinks = document.querySelectorAll('.nav-link');
@@ -267,29 +278,37 @@ function createMatrixCodeRain() {
     return setInterval(draw, 50);
 }
 
-// Active Navigation Link
+// Active Navigation Link - Optimized to prevent forced reflow
 function setupActiveNavigation() {
     const sections = document.querySelectorAll('.section');
     const navLinks = document.querySelectorAll('.nav-link');
     
+    let scrollTimeout;
     window.addEventListener('scroll', () => {
-        let current = '';
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            
-            if (pageYOffset >= sectionTop - 200) {
-                current = section.getAttribute('id');
-            }
-        });
-        
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
-        });
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(() => {
+                requestAnimationFrame(() => {
+                    let current = '';
+                    
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        const sectionHeight = section.clientHeight;
+                        
+                        if (pageYOffset >= sectionTop - 200) {
+                            current = section.getAttribute('id');
+                        }
+                    });
+                    
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${current}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                });
+                scrollTimeout = null;
+            }, 16); // ~60fps throttling
+        }
     });
 }
 
