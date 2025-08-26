@@ -12,6 +12,23 @@
     --font-main: 'Source Code Pro', monospace;
 }
 
+/* Performance optimizations */
+* {
+    will-change: auto;
+}
+
+body {
+    contain: layout style paint;
+}
+
+.section {
+    contain: layout style paint;
+}
+
+.profile-picture img {
+    contain: layout style paint;
+}
+
 * {
     margin: 0;
     padding: 0;

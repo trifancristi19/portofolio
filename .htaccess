@@ -52,14 +52,22 @@
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
-    # Cache Control for static assets
+    # Cache Control for static assets - Extended cache for better performance
     <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set Expires "Thu, 31 Dec 2037 23:55:55 GMT"
     </FilesMatch>
     
-    # Cache Control for HTML
+    # Cache Control for HTML - Moderate cache
     <FilesMatch "\.(html|htm)$">
-        Header set Cache-Control "public, max-age=3600"
+        Header set Cache-Control "public, max-age=86400"
+        Header set Expires "access plus 1 day"
+    </FilesMatch>
+    
+    # Cache Control for images - Long cache
+    <FilesMatch "\.(png|jpg|jpeg|gif|webp)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set Expires "Thu, 31 Dec 2037 23:55:55 GMT"
     </FilesMatch>
 </IfModule>
 

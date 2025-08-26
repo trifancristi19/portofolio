@@ -1,4 +1,4 @@
-// Matrix Rain Animation
+// Matrix Rain Animation - Performance Optimized
 class MatrixRain {
     constructor() {
         this.canvas = document.createElement('canvas');
@@ -9,14 +9,15 @@ class MatrixRain {
         this.canvas.style.top = '0';
         this.canvas.style.left = '0';
         this.canvas.style.zIndex = '-2';
-        this.canvas.style.opacity = '0.1';
+        this.canvas.style.opacity = '0.05';
+        this.canvas.style.willChange = 'transform';
         document.body.appendChild(this.canvas);
         
-        this.fontSize = 14;
+        this.fontSize = 12;
         this.columns = Math.floor(this.canvas.width / this.fontSize);
         this.drops = [];
         
-        this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ'.split('');
+        this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
         
         for (let i = 0; i < this.columns; i++) {
             this.drops[i] = Math.floor(Math.random() * -100);
@@ -25,8 +26,15 @@ class MatrixRain {
         this.draw = this.draw.bind(this);
         this.resize = this.resize.bind(this);
         
-        window.addEventListener('resize', this.resize);
-        this.interval = setInterval(this.draw, 40);
+        // Throttle resize events
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(this.resize, 100);
+        });
+        
+        // Reduce animation frequency for better performance
+        this.interval = setInterval(this.draw, 60);
     }
     
     resize() {
@@ -40,28 +48,36 @@ class MatrixRain {
     }
     
     draw() {
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.ctx.fillStyle = '#0f0';
-        this.ctx.font = `${this.fontSize}px monospace`;
-        
-        for (let i = 0; i < this.drops.length; i++) {
-            const text = this.chars[Math.floor(Math.random() * this.chars.length)];
-            
-            this.ctx.fillText(text, i * this.fontSize, this.drops[i] * this.fontSize);
-            
-            if (this.drops[i] * this.fontSize > this.canvas.height && Math.random() > 0.98) {
-                this.drops[i] = 0;
-            }
-            
-            this.drops[i]++;
+        // Use requestAnimationFrame for better performance
+        if (!this.animationFrame) {
+            this.animationFrame = requestAnimationFrame(() => {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.ctx.fillStyle = '#0f0';
+                this.ctx.font = `${this.fontSize}px monospace`;
+                
+                for (let i = 0; i < this.drops.length; i++) {
+                    const text = this.chars[Math.floor(Math.random() * this.chars.length)];
+                    
+                    this.ctx.fillText(text, i * this.fontSize, this.drops[i] * this.fontSize);
+                    
+                    if (this.drops[i] * this.fontSize > this.canvas.height && Math.random() > 0.98) {
+                        this.drops[i] = 0;
+                    }
+                    
+                    this.drops[i]++;
+                }
+                this.animationFrame = null;
+            });
         }
     }
     
     destroy() {
         clearInterval(this.interval);
-        window.removeEventListener('resize', this.resize);
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+        }
         this.canvas.remove();
     }
 }
@@ -311,12 +327,18 @@ function initTerminalCommands() {
 function setupBackToTop() {
     const backToTopButton = document.getElementById('back-to-top');
     
-    // Show button when user scrolls down 300px
+    // Show button when user scrolls down 300px - Throttled for performance
+    let scrollTimeout;
     window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            backToTopButton.classList.add('visible');
-        } else {
-            backToTopButton.classList.remove('visible');
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(() => {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('visible');
+                } else {
+                    backToTopButton.classList.remove('visible');
+                }
+                scrollTimeout = null;
+            }, 16); // ~60fps
         }
     });
     
@@ -380,14 +402,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initTerminalCommands();
     
     // Set first nav link as active by default
-    document.querySelector('.nav-link').classList.add('active');
+    const firstNavLink = document.querySelector('.nav-link');
+    if (firstNavLink) firstNavLink.classList.add('active');
     
-    // Add CSS class for section animations on load
+    // Add CSS class for section animations on load - Batch DOM operations
     setTimeout(() => {
-        document.querySelector('.section').classList.add('visible');
-        document.querySelector('.section').classList.add('section-highlight');
-        setTimeout(() => {
-            document.querySelector('.section').classList.remove('section-highlight');
-        }, 1500);
+        const firstSection = document.querySelector('.section');
+        if (firstSection) {
+            firstSection.classList.add('visible', 'section-highlight');
+            setTimeout(() => {
+                firstSection.classList.remove('section-highlight');
+            }, 1500);
+        }
     }, 500);
 }); 
