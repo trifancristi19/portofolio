@@ -1,13 +1,22 @@
 /* Performance Optimized CSS - Critical styles moved to inline HTML */
 /* Font display optimization for better performance */
+/* Google Fonts are loaded via link with &display=swap; avoid defining @font-face without src */
+
+/* Ensure Font Awesome webfonts use font-display: swap even when loaded from CDN */
 @font-face {
-    font-family: 'Share Tech Mono';
+    font-family: 'Font Awesome 6 Free';
+    font-style: normal;
+    font-weight: 900;
     font-display: swap;
+    src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2') format('woff2');
 }
 
 @font-face {
-    font-family: 'Source Code Pro';
+    font-family: 'Font Awesome 6 Brands';
+    font-style: normal;
+    font-weight: 400;
     font-display: swap;
+    src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-brands-400.woff2') format('woff2');
 }
 
 :root {
