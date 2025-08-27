@@ -1,6 +1,6 @@
-const CACHE_NAME = 'cristian-portfolio-v2';
-const STATIC_CACHE = 'static-v2';
-const DYNAMIC_CACHE = 'dynamic-v2';
+const CACHE_NAME = 'cristian-portfolio-v3';
+const STATIC_CACHE = 'static-v3';
+const DYNAMIC_CACHE = 'dynamic-v3';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -13,11 +13,8 @@ const STATIC_ASSETS = [
     '/assets/cv/CV-Cristian.pdf'
 ];
 
-// External resources to cache
-const EXTERNAL_RESOURCES = [
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
-    'https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Source+Code+Pro:wght@300;400;500;700&display=swap&font-display=swap'
-];
+// Do not cache external CDN resources to avoid stale font/CSS
+const EXTERNAL_RESOURCES = [];
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
