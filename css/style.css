@@ -60,7 +60,7 @@
 
 /* Fine-tune portrait framing (x y). Lower y raises crop. */
 #profile-image {
-    object-position: 60% 35%;
+    object-position: 60% 35% !important;
     object-fit: cover;
 }
 
@@ -780,24 +780,25 @@ footer {
 }
 
 /* Image positioning options - add these classes to the img element as needed */
+/* Note: These utility classes have lower specificity than #profile-image */
 .position-center {
-    object-position: center center;
+    object-position: center center !important;
 }
 
 .position-top {
-    object-position: center top;
+    object-position: center top !important;
 }
 
 .position-bottom {
-    object-position: center bottom;
+    object-position: center bottom !important;
 }
 
 .position-left {
-    object-position: left center;
+    object-position: left center !important;
 }
 
 .position-right {
-    object-position: right center;
+    object-position: right center !important;
 }
 
 /* Zoom options */
