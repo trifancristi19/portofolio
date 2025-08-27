@@ -20,9 +20,7 @@
     src: url('assets/webfonts/fa-brands-400.woff2') format('woff2');
 }
 
-/* Minimal FA class mappings to keep existing <i> icons working */
-.fas { font-family: 'Font Awesome 6 Free'; font-weight: 900; }
-.fab { font-family: 'Font Awesome 6 Brands'; font-weight: 400; }
+/* Remove FA class mappings; using inline SVG icons instead */
 
 :root {
     --primary-color: #0f0;
