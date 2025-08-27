@@ -40,8 +40,14 @@
     contain: layout style paint;
     will-change: auto;
     transform: translateZ(0); /* Force hardware acceleration */
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
+    image-rendering: auto; /* avoid sharpening artifacts */
+    object-position: center center;
+}
+
+/* Fine-tune portrait framing (x y). Lower y raises crop. */
+#profile-image {
+    object-position: 50% 38%;
+    object-fit: cover;
 }
 
 /* Optimize animations and transitions */
