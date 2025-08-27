@@ -172,21 +172,32 @@ function setupEnhancedSmoothScrolling() {
     scrollIndicator.className = 'scroll-indicator';
     document.body.appendChild(scrollIndicator);
     
-    // Update scroll indicator width - Throttled to prevent forced reflow
+    // Cache DOM measurements to prevent forced reflow
     let scrollTimeout;
+    let cachedHeight = 0;
+    
+    // Cache height once on load
+    function cacheHeight() {
+        cachedHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    }
+    
+    // Update scroll indicator width - Optimized to prevent forced reflow
     window.addEventListener('scroll', () => {
         if (!scrollTimeout) {
             scrollTimeout = setTimeout(() => {
                 requestAnimationFrame(() => {
                     const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                    const scrolled = (winScroll / height) * 100;
+                    const scrolled = (winScroll / cachedHeight) * 100;
                     scrollIndicator.style.width = scrolled + '%';
                 });
                 scrollTimeout = null;
             }, 16); // ~60fps throttling
         }
     });
+    
+    // Cache height on load and resize
+    cacheHeight();
+    window.addEventListener('resize', cacheHeight, { passive: true });
 
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.section');
@@ -209,9 +220,12 @@ function setupEnhancedSmoothScrolling() {
                 section.classList.remove('section-highlight');
             });
             
+            // Cache offsetTop to prevent forced reflow
+            const targetOffset = targetElement.offsetTop;
+            
             // Smooth scroll to target
             window.scrollTo({
-                top: targetElement.offsetTop - 80,
+                top: targetOffset - 80,
                 behavior: 'smooth'
             });
             
@@ -269,10 +283,18 @@ function createMatrixCodeRain() {
         }
     }
     
-    // Resize handler
+    // Resize handler - Throttled to prevent forced reflow
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        if (!resizeTimeout) {
+            resizeTimeout = setTimeout(() => {
+                requestAnimationFrame(() => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                });
+                resizeTimeout = null;
+            }, 16); // ~60fps throttling
+        }
     });
     
     return setInterval(draw, 50);

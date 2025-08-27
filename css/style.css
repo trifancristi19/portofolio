@@ -3,22 +3,7 @@
 /* Google Fonts are loaded via link with &display=swap; avoid defining @font-face without src */
 
 /* Ensure Font Awesome webfonts use font-display: swap even when loaded from CDN */
-/* Self-hosted Font Awesome webfonts */
-@font-face {
-    font-family: 'Font Awesome 6 Free';
-    font-style: normal;
-    font-weight: 900;
-    font-display: swap;
-    src: url('assets/webfonts/fa-solid-900.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Font Awesome 6 Brands';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('assets/webfonts/fa-brands-400.woff2') format('woff2');
-}
+/* Font Awesome webfonts removed - using inline SVG icons instead */
 
 /* Remove FA class mappings; using inline SVG icons instead */
 
