@@ -259,20 +259,7 @@
     <link rel="preload" href="css/style.css?v=1" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="css/style.css?v=1"></noscript>
     
-    <!-- Font Awesome with font-display: swap for better performance -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
-    
-    <!-- Font Awesome font-display optimization -->
-    <style>
-        /* Font Awesome font-display: swap to prevent layout shifts */
-        .fa, .fas, .far, .fab {
-            font-display: swap !important;
-        }
-        [class*="fa-"] {
-            font-display: swap !important;
-        }
-    </style>
+    <!-- Using self-hosted Font Awesome webfonts (see css/style.css for @font-face) -->
     
     <!-- Google Fonts with font-display: swap -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Source+Code+Pro:wght@300;400;500;700&display=swap&font-display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
