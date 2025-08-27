@@ -46,7 +46,7 @@
 
 /* Fine-tune portrait framing (x y). Lower y raises crop. */
 #profile-image {
-    object-position: 50% 38%;
+    object-position: 60% 38%;
     object-fit: cover;
 }
 
