@@ -283,33 +283,58 @@ function setupActiveNavigation() {
     const sections = document.querySelectorAll('.section');
     const navLinks = document.querySelectorAll('.nav-link');
     
-    let scrollTimeout;
-    window.addEventListener('scroll', () => {
-        if (!scrollTimeout) {
-            scrollTimeout = setTimeout(() => {
-                requestAnimationFrame(() => {
-                    let current = '';
-                    
-                    sections.forEach(section => {
-                        const sectionTop = section.offsetTop;
-                        const sectionHeight = section.clientHeight;
-                        
-                        if (pageYOffset >= sectionTop - 200) {
-                            current = section.getAttribute('id');
-                        }
-                    });
-                    
-                    navLinks.forEach(link => {
-                        link.classList.remove('active');
-                        if (link.getAttribute('href') === `#${current}`) {
-                            link.classList.add('active');
-                        }
-                    });
-                });
-                scrollTimeout = null;
-            }, 16); // ~60fps throttling
+    // Cache section measurements to prevent forced reflows
+    let sectionCache = [];
+    let lastScrollY = 0;
+    let ticking = false;
+    
+    // Cache section positions once on load
+    function cacheSectionPositions() {
+        sectionCache = Array.from(sections).map(section => ({
+            id: section.getAttribute('id'),
+            top: section.offsetTop,
+            height: section.clientHeight
+        }));
+    }
+    
+    // Update navigation without DOM queries
+    function updateNavigation() {
+        const scrollY = window.pageYOffset;
+        let current = '';
+        
+        for (const section of sectionCache) {
+            if (scrollY >= section.top - 200) {
+                current = section.id;
+            }
         }
-    });
+        
+        navLinks.forEach(link => {
+            const isActive = link.getAttribute('href') === `#${current}`;
+            if (isActive && !link.classList.contains('active')) {
+                link.classList.add('active');
+            } else if (!isActive && link.classList.contains('active')) {
+                link.classList.remove('active');
+            }
+        });
+        
+        ticking = false;
+    }
+    
+    // Throttled scroll handler using requestAnimationFrame
+    function onScroll() {
+        lastScrollY = window.pageYOffset;
+        if (!ticking) {
+            requestAnimationFrame(updateNavigation);
+            ticking = true;
+        }
+    }
+    
+    // Cache positions on load and resize
+    cacheSectionPositions();
+    window.addEventListener('resize', cacheSectionPositions, { passive: true });
+    
+    // Use passive scroll listener for better performance
+    window.addEventListener('scroll', onScroll, { passive: true });
 }
 
 // Initialize Terminal Commands
@@ -342,24 +367,35 @@ function initTerminalCommands() {
     });
 }
 
-// Back to Top Button
+// Back to Top Button - Optimized to prevent forced reflow
 function setupBackToTop() {
     const backToTopButton = document.getElementById('back-to-top');
+    let lastScrollY = 0;
+    let ticking = false;
     
-    // Show button when user scrolls down 300px - Throttled for performance
-    let scrollTimeout;
-    window.addEventListener('scroll', () => {
-        if (!scrollTimeout) {
-            scrollTimeout = setTimeout(() => {
-                if (window.pageYOffset > 300) {
-                    backToTopButton.classList.add('visible');
-                } else {
-                    backToTopButton.classList.remove('visible');
-                }
-                scrollTimeout = null;
-            }, 16); // ~60fps
+    function updateBackToTop() {
+        const scrollY = window.pageYOffset;
+        const shouldShow = scrollY > 300;
+        
+        if (shouldShow && !backToTopButton.classList.contains('visible')) {
+            backToTopButton.classList.add('visible');
+        } else if (!shouldShow && backToTopButton.classList.contains('visible')) {
+            backToTopButton.classList.remove('visible');
         }
-    });
+        
+        ticking = false;
+    }
+    
+    function onScroll() {
+        lastScrollY = window.pageYOffset;
+        if (!ticking) {
+            requestAnimationFrame(updateBackToTop);
+            ticking = true;
+        }
+    }
+    
+    // Use passive scroll listener for better performance
+    window.addEventListener('scroll', onScroll, { passive: true });
     
     // Scroll to top with animation when button is clicked
     backToTopButton.addEventListener('click', (e) => {
@@ -379,16 +415,6 @@ function setupBackToTop() {
             top: 0,
             behavior: 'smooth'
         });
-        
-        // Highlight header when back to top is clicked
-        setTimeout(() => {
-            const header = document.querySelector('header');
-            header.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.5)';
-            
-            setTimeout(() => {
-                header.style.boxShadow = '';
-            }, 1000);
-        }, 500);
     });
 }
 

@@ -39,6 +39,9 @@
 .profile-picture img {
     contain: layout style paint;
     will-change: auto;
+    transform: translateZ(0); /* Force hardware acceleration */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
 }
 
 /* Optimize animations and transitions */
