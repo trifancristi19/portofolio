@@ -232,12 +232,6 @@ function setupEnhancedSmoothScrolling() {
             // Ensure we don't scroll past the top of the page
             const finalScrollOffset = Math.max(0, scrollOffset);
             
-            // Debug logging (remove this after testing)
-            console.log('Navigation height:', navHeight);
-            console.log('Target offset:', targetOffset);
-            console.log('Scroll offset:', scrollOffset);
-            console.log('Final scroll:', finalScrollOffset);
-            
             // Smooth scroll to target with proper offset
             window.scrollTo({
                 top: finalScrollOffset,
