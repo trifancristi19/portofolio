@@ -1,6 +1,12 @@
 /* Performance Optimized CSS - Non-critical styles loaded asynchronously */
 /* Critical styles are inlined in HTML for above-the-fold performance */
 
+/* Global smooth scrolling */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px; /* Account for sticky navigation */
+}
+
 /* Skip Link for Accessibility */
 .skip-link {
     position: absolute;

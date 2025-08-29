@@ -215,17 +215,26 @@ function setupEnhancedSmoothScrolling() {
             const targetId = link.getAttribute('href');
             const targetElement = document.querySelector(targetId);
             
+            if (!targetElement) return;
+            
             // Remove any existing highlight classes
             sections.forEach(section => {
                 section.classList.remove('section-highlight');
             });
             
-            // Cache offsetTop to prevent forced reflow
-            const targetOffset = targetElement.offsetTop;
+            // Get the sticky navigation height for proper offset calculation
+            const navHeight = document.getElementById('main-nav').offsetHeight;
             
-            // Smooth scroll to target
+            // Calculate the target position with proper offset
+            const targetOffset = targetElement.offsetTop;
+            const scrollOffset = targetOffset - navHeight - 20; // 20px additional spacing
+            
+            // Ensure we don't scroll past the top of the page
+            const finalScrollOffset = Math.max(0, scrollOffset);
+            
+            // Smooth scroll to target with proper offset
             window.scrollTo({
-                top: targetOffset - 80,
+                top: finalScrollOffset,
                 behavior: 'smooth'
             });
             
