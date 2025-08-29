@@ -4,7 +4,7 @@
 /* Global smooth scrolling */
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: 100px; /* Account for sticky navigation */
+    scroll-padding-top: 80px; /* Adjusted for better navigation positioning */
 }
 
 /* Skip Link for Accessibility */

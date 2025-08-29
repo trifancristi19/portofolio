@@ -227,10 +227,16 @@ function setupEnhancedSmoothScrolling() {
             
             // Calculate the target position with proper offset
             const targetOffset = targetElement.offsetTop;
-            const scrollOffset = targetOffset - navHeight - 20; // 20px additional spacing
+            const scrollOffset = targetOffset - navHeight - 15; // 15px spacing below nav
             
             // Ensure we don't scroll past the top of the page
             const finalScrollOffset = Math.max(0, scrollOffset);
+            
+            // Debug logging (remove this after testing)
+            console.log('Navigation height:', navHeight);
+            console.log('Target offset:', targetOffset);
+            console.log('Scroll offset:', scrollOffset);
+            console.log('Final scroll:', finalScrollOffset);
             
             // Smooth scroll to target with proper offset
             window.scrollTo({
