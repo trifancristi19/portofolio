@@ -79,6 +79,11 @@ self.addEventListener('fetch', event => {
 
 // Serve images with cache-first strategy
 async function serveImage(request) {
+    // Check if the request URL is cacheable
+    if (!isCacheableUrl(request.url)) {
+        return fetch(request);
+    }
+    
     const cache = await caches.open(STATIC_CACHE);
     const cachedResponse = await cache.match(request);
     
@@ -100,6 +105,10 @@ async function serveImage(request) {
 
 // Serve CSS/JS with cache-first strategy
 async function serveAsset(request) {
+    // Check if the request URL is cacheable
+    if (!isCacheableUrl(request.url)) {
+    return fetch(request);
+    }
     const cache = await caches.open(STATIC_CACHE);
     const cachedResponse = await cache.match(request);
     
@@ -120,6 +129,10 @@ async function serveAsset(request) {
 
 // Serve fonts with cache-first strategy
 async function serveFont(request) {
+    // Check if the request URL is cacheable
+    if (!isCacheableUrl(request.url)) {
+        return fetch(request);
+        }
     const cache = await caches.open(DYNAMIC_CACHE);
     const cachedResponse = await cache.match(request);
     
@@ -140,6 +153,10 @@ async function serveFont(request) {
 
 // Serve pages with network-first strategy
 async function servePage(request) {
+    // Check if the request URL is cacheable
+    if (!isCacheableUrl(request.url)) {
+        return fetch(request);
+    }
     try {
         const networkResponse = await fetch(request);
         if (networkResponse.ok) {
