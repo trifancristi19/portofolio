@@ -54,10 +54,10 @@
     ExpiresByType application/font-woff "access plus 1 year"
     ExpiresByType application/font-woff2 "access plus 1 year"
     
-    # HTML and XML
-    ExpiresByType text/html "access plus 1 month"
-    ExpiresByType application/xhtml+xml "access plus 1 month"
-    ExpiresByType application/xml "access plus 1 month"
+    # HTML and XML - Don't cache HTML to prevent stale content
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType application/xhtml+xml "access plus 0 seconds"
+    ExpiresByType application/xml "access plus 0 seconds"
     
     # PDFs
     ExpiresByType application/pdf "access plus 1 year"
@@ -70,9 +70,9 @@
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
     
-    # Cache HTML for 1 month
+    # Don't cache HTML - always revalidate to prevent stale content
     <FilesMatch "\.(html|htm)$">
-        Header set Cache-Control "public, max-age=2592000"
+        Header set Cache-Control "no-cache, must-revalidate"
     </FilesMatch>
     
     # Security headers

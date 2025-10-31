@@ -1,6 +1,6 @@
-const CACHE_NAME = 'cristian-portfolio-v4';
-const STATIC_CACHE = 'static-v4';
-const DYNAMIC_CACHE = 'dynamic-v4';
+const CACHE_NAME = 'cristian-portfolio-v5';
+const STATIC_CACHE = 'static-v5';
+const DYNAMIC_CACHE = 'dynamic-v5';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -171,6 +171,17 @@ async function servePage(request) {
             return cachedResponse;
         }
         return new Response('', { status: 404 });
+    }
+}
+
+// Helper function to check if URL is cacheable
+function isCacheableUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        // Only cache same-origin requests
+        return urlObj.origin === self.location.origin;
+    } catch (error) {
+        return false;
     }
 }
 
