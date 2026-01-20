@@ -1,0 +1,21 @@
+{
+    "name": "Cristian Trifan Portfolio",
+    "short_name": "Cristian T.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#121212",
+    "description": "Portfolio of Cristian Trifan - IT Student & Developer",
+    "icons": [
+        {
+            "src": "assets/images/hacker.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/images/hacker.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
