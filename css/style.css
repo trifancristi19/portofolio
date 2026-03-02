@@ -450,7 +450,6 @@ html {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
-    contain: layout style paint;
     will-change: auto;
     transform: translateZ(0);
 }
@@ -460,16 +459,17 @@ html {
     border: 1px solid #333;
     border-radius: 5px;
     padding: 20px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    contain: layout style paint;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     will-change: transform, box-shadow;
     transform: translateZ(0);
+    position: relative;
 }
 
 .skill-category:hover {
     transform: translateY(-5px) translateZ(0);
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
     border-color: var(--primary-color);
+    z-index: 1;
 }
 
 .skill-category h3 {
@@ -605,7 +605,6 @@ html {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
-    contain: layout style paint;
     will-change: auto;
     transform: translateZ(0);
 }
@@ -615,16 +614,17 @@ html {
     border: 1px solid #333;
     border-radius: 5px;
     overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
-    contain: layout style paint;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     will-change: transform, box-shadow;
     transform: translateZ(0);
+    position: relative;
 }
 
 .project-card:hover {
     transform: translateY(-5px) translateZ(0);
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
     border-color: var(--primary-color);
+    z-index: 1;
 }
 
 .project-header {
@@ -695,7 +695,6 @@ html {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
     margin-top: 30px;
-    contain: layout style paint;
     will-change: auto;
     transform: translateZ(0);
 }
@@ -707,16 +706,17 @@ html {
     padding: 15px;
     border-radius: 5px;
     border: 1px solid #333;
-    transition: transform 0.3s, box-shadow 0.3s;
-    contain: layout style paint;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     will-change: transform, box-shadow;
     transform: translateZ(0);
+    position: relative;
 }
 
 .contact-item:hover {
     transform: translateY(-5px) translateZ(0);
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
     border-color: var(--primary-color);
+    z-index: 1;
 }
 
 .contact-item i {
