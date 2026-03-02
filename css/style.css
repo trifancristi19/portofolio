@@ -913,9 +913,9 @@ footer {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    contain: layout style paint;
     will-change: auto;
     transform: translateZ(0);
+    position: relative;
 }
 
 .github-link:hover {
@@ -924,6 +924,7 @@ footer {
     transform: translateY(-2px) translateZ(0);
     box-shadow: 0 2px 8px rgba(0, 255, 0, 0.3);
     border-color: var(--primary-color);
+    z-index: 1;
 }
 
 .github-link:focus {
