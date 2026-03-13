@@ -1,35 +1,20 @@
-const CACHE_NAME = 'cristian-portfolio-v6';
-const STATIC_CACHE = 'static-v6';
-const DYNAMIC_CACHE = 'dynamic-v6';
+const STATIC_CACHE = 'static-v7';
+const DYNAMIC_CACHE = 'dynamic-v7';
 
 const STATIC_ASSETS = [
     '/',
     '/index.html',
-    '/css/style.css',
-    '/js/script.js',
+    '/css/style.css?v=7',
+    '/js/script.js?v=4',
     '/assets/images/hacker.png',
-    '/assets/images/Poza Profil.jpg',
-    '/assets/cv/CV-Cristian.pdf'
+    '/assets/images/Poza%20Profil.jpg',
+    '/assets/cv/CV-CristianTrifan-2026.pdf'
 ];
 
 const EXTERNAL_RESOURCES = [];
 
 self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open(STATIC_CACHE)
-            .then(cache => {
-                return cache.addAll(STATIC_ASSETS);
-            })
-            .then(() => {
-                return caches.open(DYNAMIC_CACHE);
-            })
-            .then(cache => {
-                return cache.addAll(EXTERNAL_RESOURCES);
-            })
-            .catch(error => {
-                console.log('Cache installation failed:', error);
-            })
-    );
+    event.waitUntil(precacheAssets());
     self.skipWaiting();
 });
 
@@ -153,6 +138,27 @@ async function servePage(request) {
         }
         return new Response('', { status: 404 });
     }
+}
+
+async function precacheAssets() {
+    const staticCache = await caches.open(STATIC_CACHE);
+    const dynamicCache = await caches.open(DYNAMIC_CACHE);
+
+    await Promise.all(
+        STATIC_ASSETS.map(asset =>
+            staticCache.add(asset).catch(error => {
+                console.warn('Skipping failed precache asset:', asset, error);
+            })
+        )
+    );
+
+    await Promise.all(
+        EXTERNAL_RESOURCES.map(resource =>
+            dynamicCache.add(resource).catch(error => {
+                console.warn('Skipping failed external resource:', resource, error);
+            })
+        )
+    );
 }
 
 function isCacheableUrl(url) {
