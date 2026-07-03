@@ -1,14 +1,15 @@
-const STATIC_CACHE = 'static-v7';
-const DYNAMIC_CACHE = 'dynamic-v7';
+const STATIC_CACHE = 'static-v9';
+const DYNAMIC_CACHE = 'dynamic-v9';
 
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/css/style.css?v=7',
-    '/js/script.js?v=4',
-    '/assets/images/hacker.png',
-    '/assets/images/Poza%20Profil.jpg',
-    '/assets/cv/CV-CristianTrifan-2026.pdf'
+    './',
+    './index.html',
+    './css/style.css?v=9',
+    './js/script.js?v=5',
+    './manifest.json',
+    './assets/images/hacker.png',
+    './assets/images/Poza%20Profil.jpg',
+    './assets/cv/Cristian_Trifan_CV.pdf'
 ];
 
 const EXTERNAL_RESOURCES = [];
@@ -35,7 +36,6 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     const { request } = event;
-    const url = new URL(request.url);
 
     if (request.method !== 'GET') {
         return;
@@ -142,21 +142,10 @@ async function servePage(request) {
 
 async function precacheAssets() {
     const staticCache = await caches.open(STATIC_CACHE);
-    const dynamicCache = await caches.open(DYNAMIC_CACHE);
 
     await Promise.all(
         STATIC_ASSETS.map(asset =>
-            staticCache.add(asset).catch(error => {
-                console.warn('Skipping failed precache asset:', asset, error);
-            })
-        )
-    );
-
-    await Promise.all(
-        EXTERNAL_RESOURCES.map(resource =>
-            dynamicCache.add(resource).catch(error => {
-                console.warn('Skipping failed external resource:', resource, error);
-            })
+            staticCache.add(asset).catch(() => {})
         )
     );
 }
@@ -167,19 +156,5 @@ function isCacheableUrl(url) {
         return urlObj.origin === self.location.origin;
     } catch (error) {
         return false;
-    }
-}
-
-self.addEventListener('sync', event => {
-    if (event.tag === 'background-sync') {
-        event.waitUntil(doBackgroundSync());
-    }
-});
-
-async function doBackgroundSync() {
-    try {
-        console.log('Background sync completed');
-    } catch (error) {
-        console.log('Background sync failed:', error);
     }
 }

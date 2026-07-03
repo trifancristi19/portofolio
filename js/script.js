@@ -357,7 +357,11 @@ function setupBackToTop() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const matrixRain = new MatrixRain();
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion) {
+        new MatrixRain();
+    }
 
     createIntersectionObserver();
 
