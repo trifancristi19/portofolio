@@ -1,11 +1,11 @@
-const STATIC_CACHE = 'static-v9';
-const DYNAMIC_CACHE = 'dynamic-v9';
+const STATIC_CACHE = 'static-v10';
+const DYNAMIC_CACHE = 'dynamic-v10';
 
 const STATIC_ASSETS = [
     './',
     './index.html',
-    './css/style.css?v=9',
-    './js/script.js?v=5',
+    './css/style.css?v=10',
+    './js/script.js?v=6',
     './manifest.json',
     './assets/images/hacker.png',
     './assets/images/Poza%20Profil.jpg',

@@ -1,83 +1,3 @@
-class MatrixRain {
-    constructor() {
-        this.canvas = document.createElement('canvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.canvas.style.position = 'fixed';
-        this.canvas.style.top = '0';
-        this.canvas.style.left = '0';
-        this.canvas.style.zIndex = '-2';
-        this.canvas.style.opacity = '0.05';
-        this.canvas.style.willChange = 'transform';
-        document.body.appendChild(this.canvas);
-
-        this.fontSize = 12;
-        this.columns = Math.floor(this.canvas.width / this.fontSize);
-        this.drops = [];
-
-        this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
-
-        for (let i = 0; i < this.columns; i++) {
-            this.drops[i] = Math.floor(Math.random() * -100);
-        }
-
-        this.draw = this.draw.bind(this);
-        this.resize = this.resize.bind(this);
-
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(this.resize, 100);
-        });
-
-        this.interval = setInterval(this.draw, 60);
-    }
-
-    resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.columns = Math.floor(this.canvas.width / this.fontSize);
-        this.drops = [];
-        for (let i = 0; i < this.columns; i++) {
-            this.drops[i] = Math.floor(Math.random() * -100);
-        }
-    }
-
-    draw() {
-        if (!this.animationFrame) {
-            this.animationFrame = requestAnimationFrame(() => {
-                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-                this.ctx.fillStyle = '#0f0';
-                this.ctx.font = `${this.fontSize}px monospace`;
-
-                for (let i = 0; i < this.drops.length; i++) {
-                    const text = this.chars[Math.floor(Math.random() * this.chars.length)];
-
-                    this.ctx.fillText(text, i * this.fontSize, this.drops[i] * this.fontSize);
-
-                    if (this.drops[i] * this.fontSize > this.canvas.height && Math.random() > 0.98) {
-                        this.drops[i] = 0;
-                    }
-
-                    this.drops[i]++;
-                }
-                this.animationFrame = null;
-            });
-        }
-    }
-
-    destroy() {
-        clearInterval(this.interval);
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-        }
-        this.canvas.remove();
-    }
-}
-
 class TerminalText {
     constructor(element) {
         this.element = element;
@@ -163,38 +83,63 @@ function setupEnhancedSmoothScrolling() {
     scrollIndicator.className = 'scroll-indicator';
     document.body.appendChild(scrollIndicator);
 
-    let scrollTimeout;
-    let cachedHeight = 0;
-
-    function cacheHeight() {
-        cachedHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    }
-
-    window.addEventListener('scroll', () => {
-        if (!scrollTimeout) {
-            scrollTimeout = setTimeout(() => {
-                requestAnimationFrame(() => {
-                    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                    const scrolled = (winScroll / cachedHeight) * 100;
-                    scrollIndicator.style.width = scrolled + '%';
-                });
-                scrollTimeout = null;
-            }, 16);
-        }
-    });
-
-    cacheHeight();
-    window.addEventListener('resize', cacheHeight, { passive: true });
-
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.section');
+    const backToTopButton = document.getElementById('back-to-top');
+
+    let cachedHeight = 0;
+    let sectionCache = [];
+    let ticking = false;
+
+    function cacheLayout() {
+        cachedHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        sectionCache = Array.from(sections).map(section => ({
+            id: section.getAttribute('id'),
+            top: section.offsetTop
+        }));
+    }
+
+    function updateOnScroll() {
+        const scrollY = window.pageYOffset;
+
+        if (cachedHeight > 0) {
+            scrollIndicator.style.width = `${(scrollY / cachedHeight) * 100}%`;
+        }
+
+        if (backToTopButton) {
+            backToTopButton.classList.toggle('visible', scrollY > 300);
+        }
+
+        let current = '';
+        for (const section of sectionCache) {
+            if (scrollY >= section.top - 200) {
+                current = section.id;
+            }
+        }
+
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
+        });
+
+        ticking = false;
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(updateOnScroll);
+            ticking = true;
+        }
+    }
+
+    cacheLayout();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', cacheLayout, { passive: true });
 
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
 
             navLinks.forEach(l => l.classList.remove('active'));
-
             link.classList.add('active');
 
             const targetId = link.getAttribute('href');
@@ -207,78 +152,31 @@ function setupEnhancedSmoothScrolling() {
             });
 
             const navHeight = document.getElementById('main-nav').offsetHeight;
-
-            const targetOffset = targetElement.offsetTop;
-            const scrollOffset = targetOffset - navHeight - 15;
-
-            const finalScrollOffset = Math.max(0, scrollOffset);
+            const scrollOffset = Math.max(0, targetElement.offsetTop - navHeight - 15);
 
             window.scrollTo({
-                top: finalScrollOffset,
+                top: scrollOffset,
                 behavior: 'smooth'
             });
 
             setTimeout(() => {
                 targetElement.classList.add('section-highlight');
-
                 setTimeout(() => {
                     targetElement.classList.remove('section-highlight');
                 }, 1500);
             }, 500);
         });
     });
-}
 
-function setupActiveNavigation() {
-    const sections = document.querySelectorAll('.section');
-    const navLinks = document.querySelectorAll('.nav-link');
-
-    let sectionCache = [];
-    let lastScrollY = 0;
-    let ticking = false;
-
-    function cacheSectionPositions() {
-        sectionCache = Array.from(sections).map(section => ({
-            id: section.getAttribute('id'),
-            top: section.offsetTop,
-            height: section.clientHeight
-        }));
-    }
-
-    function updateNavigation() {
-        const scrollY = window.pageYOffset;
-        let current = '';
-
-        for (const section of sectionCache) {
-            if (scrollY >= section.top - 200) {
-                current = section.id;
-            }
-        }
-
-        navLinks.forEach(link => {
-            const isActive = link.getAttribute('href') === `#${current}`;
-            if (isActive && !link.classList.contains('active')) {
-                link.classList.add('active');
-            } else if (!isActive && link.classList.contains('active')) {
-                link.classList.remove('active');
-            }
+    if (backToTopButton) {
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
-
-        ticking = false;
     }
-
-    function onScroll() {
-        lastScrollY = window.pageYOffset;
-        if (!ticking) {
-            requestAnimationFrame(updateNavigation);
-            ticking = true;
-        }
-    }
-
-    cacheSectionPositions();
-    window.addEventListener('resize', cacheSectionPositions, { passive: true });
-
-    window.addEventListener('scroll', onScroll, { passive: true });
 }
 
 function initTerminalCommands() {
@@ -310,66 +208,9 @@ function initTerminalCommands() {
     });
 }
 
-function setupBackToTop() {
-    const backToTopButton = document.getElementById('back-to-top');
-    let lastScrollY = 0;
-    let ticking = false;
-
-    function updateBackToTop() {
-        const scrollY = window.pageYOffset;
-        const shouldShow = scrollY > 300;
-
-        if (shouldShow && !backToTopButton.classList.contains('visible')) {
-            backToTopButton.classList.add('visible');
-        } else if (!shouldShow && backToTopButton.classList.contains('visible')) {
-            backToTopButton.classList.remove('visible');
-        }
-
-        ticking = false;
-    }
-
-    function onScroll() {
-        lastScrollY = window.pageYOffset;
-        if (!ticking) {
-            requestAnimationFrame(updateBackToTop);
-            ticking = true;
-        }
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    backToTopButton.addEventListener('click', (e) => {
-        e.preventDefault();
-
-        backToTopButton.style.transform = 'scale(1.1)';
-        backToTopButton.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.8)';
-
-        setTimeout(() => {
-            backToTopButton.style.transform = '';
-            backToTopButton.style.boxShadow = '';
-        }, 300);
-
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (!prefersReducedMotion) {
-        new MatrixRain();
-    }
-
     createIntersectionObserver();
-
     setupEnhancedSmoothScrolling();
-
-    setupActiveNavigation();
-
-    setupBackToTop();
 
     document.querySelectorAll('[data-words]').forEach(element => {
         new TerminalText(element);
