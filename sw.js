@@ -1,10 +1,10 @@
-const STATIC_CACHE = 'static-v11';
-const DYNAMIC_CACHE = 'dynamic-v11';
+const STATIC_CACHE = 'static-v12';
+const DYNAMIC_CACHE = 'dynamic-v12';
 
 const STATIC_ASSETS = [
     './',
     './index.html',
-    './css/style.css?v=11',
+    './css/style.css?v=12',
     './js/script.js?v=7',
     './manifest.json',
     './assets/images/hacker.png',
