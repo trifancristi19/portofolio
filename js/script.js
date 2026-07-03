@@ -1,3 +1,76 @@
+class MatrixRain {
+    constructor() {
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.style.position = 'fixed';
+        this.canvas.style.top = '0';
+        this.canvas.style.left = '0';
+        this.canvas.style.zIndex = '-2';
+        this.canvas.style.opacity = '0.06';
+        this.canvas.style.pointerEvents = 'none';
+        document.body.appendChild(this.canvas);
+
+        this.fontSize = 16;
+        this.maxColumns = window.innerWidth < 768 ? 45 : 70;
+        this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        this.drops = [];
+        this.running = true;
+
+        this.resize();
+        this.draw = this.draw.bind(this);
+        this.resizeHandler = this.resize.bind(this);
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(this.resizeHandler, 150);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            this.running = !document.hidden;
+        });
+
+        this.interval = setInterval(this.draw, 120);
+    }
+
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.maxColumns = window.innerWidth < 768 ? 45 : 70;
+        const columnCount = Math.min(this.maxColumns, Math.floor(this.canvas.width / this.fontSize));
+        this.drops = Array.from({ length: columnCount }, () => Math.floor(Math.random() * -20));
+    }
+
+    draw() {
+        if (!this.running) return;
+
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = '#0f0';
+        this.ctx.font = `${this.fontSize}px monospace`;
+
+        for (let i = 0; i < this.drops.length; i++) {
+            const char = this.chars[Math.floor(Math.random() * this.chars.length)];
+            const x = i * this.fontSize;
+            const y = this.drops[i] * this.fontSize;
+            this.ctx.fillText(char, x, y);
+
+            if (y > this.canvas.height && Math.random() > 0.975) {
+                this.drops[i] = 0;
+            }
+
+            this.drops[i]++;
+        }
+    }
+
+    destroy() {
+        clearInterval(this.interval);
+        this.canvas.remove();
+    }
+}
+
 class TerminalText {
     constructor(element) {
         this.element = element;
@@ -209,6 +282,12 @@ function initTerminalCommands() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion) {
+        new MatrixRain();
+    }
+
     createIntersectionObserver();
     setupEnhancedSmoothScrolling();
 

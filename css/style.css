@@ -733,6 +733,92 @@ html {
     font-family: var(--font-main);
 }
 
+.contact-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.contact-action-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid #333;
+    border-radius: 8px;
+    min-height: 110px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.contact-action-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.15);
+}
+
+.contact-action-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--primary-dark);
+    border-radius: 8px;
+    color: var(--primary-color);
+    background-color: rgba(0, 20, 0, 0.5);
+}
+
+.contact-action-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contact-action-label {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.contact-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.contact-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--primary-color);
+    border-radius: 6px;
+    background-color: rgba(0, 20, 0, 0.5);
+    color: var(--text-color);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.contact-action-btn:hover,
+.contact-action-btn:focus {
+    background-color: rgba(0, 40, 0, 0.8);
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.contact-action-btn--filled {
+    background-color: rgba(0, 40, 0, 0.8);
+}
+
 footer {
     background-color: rgba(0, 0, 0, 0.8);
     border-top: 1px solid var(--primary-dark);
@@ -1198,6 +1284,10 @@ footer {
 
     .contact-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .contact-actions {
+        grid-template-columns: 1fr;
     }
 }
 
